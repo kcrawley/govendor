@@ -232,7 +232,6 @@ func (v *Cmd) Ping(scheme, repo string) error {
 // Create creates a new copy of repo in dir.
 // The parent of dir must exist; dir must not.
 func (v *Cmd) Create(dir, repo string) error {
-	println(dir)
 	return v.run(".", v.CreateCmd, "dir", dir, "repo", repo)
 }
 

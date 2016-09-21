@@ -1445,7 +1445,7 @@ func TestOrginRetain(t *testing.T) {
 	)
 	g.In("co1")
 	c := ctx(g)
-	g.Check(c.ModifyImport(pkg("correct/name/pk2__co2/pk2"), Add))
+	g.Check(c.ModifyImport(pkg(pathos.EscapeImport("correct/name/pk2__co2/pk2")), Add))
 	g.Check(c.Alter())
 	g.Check(c.WriteVendorFile())
 
