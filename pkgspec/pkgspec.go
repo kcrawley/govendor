@@ -17,7 +17,7 @@ const (
 )
 
 const (
-	originMatch   = "::"
+	originMatch   = "__"
 	versionMatch  = "@"
 	vendorSegment = "/vendor/"
 )

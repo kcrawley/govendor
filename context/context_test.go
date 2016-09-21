@@ -15,6 +15,7 @@ import (
 	"testing"
 
 	"github.com/kardianos/govendor/internal/gt"
+	"github.com/kardianos/govendor/internal/pathos"
 	"github.com/kardianos/govendor/pkgspec"
 )
 
@@ -1298,7 +1299,7 @@ func TestOriginDir(t *testing.T) {
 	g.In("co1")
 	c := ctx(g)
 
-	g.Check(c.ModifyImport(pkg("co2/pk1/...::co3/vendor/co2/pk1"), Add))
+	g.Check(c.ModifyImport(pkg(pathos.EscapeImport("co2/pk1/...::co3/vendor/co2/pk1")), Add))
 	g.Check(c.Alter())
 	g.Check(c.WriteVendorFile())
 
@@ -1444,7 +1445,7 @@ func TestOrginRetain(t *testing.T) {
 	)
 	g.In("co1")
 	c := ctx(g)
-	g.Check(c.ModifyImport(pkg("correct/name/pk2::co2/pk2"), Add))
+	g.Check(c.ModifyImport(pkg("correct/name/pk2__co2/pk2"), Add))
 	g.Check(c.Alter())
 	g.Check(c.WriteVendorFile())
 

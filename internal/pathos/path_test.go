@@ -5,6 +5,7 @@
 package pathos
 
 import (
+	"runtime"
 	"testing"
 )
 
@@ -50,6 +51,30 @@ func TestGoEnv(t *testing.T) {
 		if ok != item.ok {
 			t.Errorf("index %d line %#v expected ok %t but got %t", index, item, item.ok, ok)
 		}
+		if result != item.result {
+			t.Errorf("index %d line %#v expected result %q but got %q", index, item, item.result, result)
+		}
+	}
+}
+
+func TestEscapeImport(t *testing.T) {
+	if runtime.GOOS != "windows" {
+		t.Skipf("not implemented for %s", runtime.GOOS)
+	}
+
+	list := []struct {
+		path   string
+		result string
+	}{
+		{`C:\Foo\Bar`, `C:\Foo\Bar`},
+		{`D:Foo\Bar`, `D:Foo\Bar`},
+		{`C:\Foo\Bar:Baz?Buzz`, `C:\Foo\Bar_Baz_Buzz`},
+		{`Foo\Bar_z`, `Foo\Bar_z`},
+		{`127.0.0.1:9000\herp\derp`, `127.0.0.1_9000\herp\derp`},
+		{`foo\bar::bar\baz`, `foo\bar__bar\baz`},
+	}
+	for index, item := range list {
+		result := EscapeImport(item.path)
 		if result != item.result {
 			t.Errorf("index %d line %#v expected result %q but got %q", index, item, item.result, result)
 		}

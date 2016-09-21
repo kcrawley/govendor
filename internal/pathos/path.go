@@ -6,6 +6,7 @@ package pathos
 
 import (
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
@@ -112,8 +113,22 @@ func FileStringEquals(s1, s2 string) bool {
 }
 
 // EscapeImport removes invalid chars for a given FS from file paths.
+// This method does _not_ validate paths.
 func EscapeImport(p string) string {
-	return strings.Replace(p, ":", "_", -1)
+	if runtime.GOOS == "windows" {
+		// capturing the drive identifier (C:) and saving it for later
+		r := regexp.MustCompile(`^([a-zA-Z]:)?([\\]?.*)?$`).FindStringSubmatch(p)
+
+		// clean up the path, replacing any invalid chars with _
+		if len(r[2]) > 0 {
+			r[2] = regexp.MustCompile(`[:*?"<>|\r\n]`).ReplaceAllString(r[2], "_")
+		}
+
+		// reattach the separated drive/path
+		p = strings.Join(append([]string{}, r[1], r[2]), "")
+	}
+
+	return p
 }
 
 // GoEnv parses a "go env" line and checks for a specific

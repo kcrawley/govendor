@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/kardianos/govendor/internal/gt"
+	"github.com/kardianos/govendor/internal/pathos"
 )
 
 func TestFetchSimple(t *testing.T) {
@@ -33,7 +34,7 @@ func TestFetchSimple(t *testing.T) {
 
 	remoteOrigin := remote.HttpAddr() + "/remote/co3/vendor/co2/pk1"
 
-	g.Check(c.ModifyImport(pkg("co2/pk1::"+remoteOrigin), Fetch))
+	g.Check(c.ModifyImport(pkg(pathos.EscapeImport("co2/pk1::"+remoteOrigin)), Fetch))
 	g.Check(c.Alter())
 	g.Check(c.WriteVendorFile())
 
@@ -91,7 +92,7 @@ func TestFetchVerbose(t *testing.T) {
 
 	remoteOrigin := remote.HttpAddr() + "/remote/co3/vendor/co2/pk1"
 
-	g.Check(c.ModifyImport(pkg("co2/pk1::"+remoteOrigin), Fetch))
+	g.Check(c.ModifyImport(pkg(pathos.EscapeImport("co2/pk1::"+remoteOrigin)), Fetch))
 	g.Check(c.Alter())
 
 	t.Logf("Log\n%s\n", buf.Bytes())
@@ -125,7 +126,7 @@ func TestUpdateOrigin(t *testing.T) {
 
 	remoteOrigin := remote.HttpAddr() + "/remote/co3/vendor/co2/pk1"
 
-	g.Check(c.ModifyImport(pkg("co2/pk1::"+remoteOrigin), Fetch))
+	g.Check(c.ModifyImport(pkg(pathos.EscapeImport("co2/pk1::"+remoteOrigin)), Fetch))
 	g.Check(c.Alter())
 	g.Check(c.WriteVendorFile())
 
@@ -168,15 +169,16 @@ func TestFetchSub(t *testing.T) {
 	)
 	remote.Setup().Commit()
 
-	remotePkg := remote.HttpAddr() + "/remote/co2/pk1"
+	remotePkg := pathos.EscapeImport(remote.HttpAddr() + "/remote/co2/pk1")
 	g.Setup("co1/pk1",
 		gt.File("a.go", "remote/co2/pk1", "remote/co2/pk1/pk2"),
 	)
 	g.In("co1")
 	c := ctx(g)
 
-	g.Check(c.ModifyImport(pkg("remote/co2/pk1::"+remotePkg+"@"+commitRev1), Fetch))
-	g.Check(c.ModifyImport(pkg("remote/co2/pk1/pk2::"+remotePkg+"/pk2"), Fetch))
+	g.Check(c.ModifyImport(pkg(pathos.EscapeImport("remote/co2/pk1::"+remotePkg+"@"+commitRev1)), Fetch))
+	g.Check(c.ModifyImport(pkg(pathos.EscapeImport("remote/co2/pk1/pk2::"+remotePkg+"/pk2")), Fetch))
+	g.Check(c.Alter())
 	g.Check(c.Alter())
 	g.Check(c.WriteVendorFile())
 
@@ -218,7 +220,7 @@ func TestFetchAgain(t *testing.T) {
 	g.In("remote/co2")
 	commitRev1, commitTime1 := remote.Setup().Commit()
 
-	remotePkg := remote.HttpAddr() + "/remote/co2/pk1"
+	remotePkg := pathos.EscapeImport(remote.HttpAddr() + "/remote/co2/pk1")
 	g.Setup("co1/pk1",
 		gt.File("a.go", remotePkg),
 	)
@@ -288,7 +290,7 @@ func TestFetchSimilarRoot(t *testing.T) {
 	g.In("remote")
 	remote := gt.NewHttpHandler(g, "git")
 
-	root := remote.HttpAddr() + "/remote/co1/"
+	root := pathos.EscapeImport(remote.HttpAddr() + "/remote/co1/")
 
 	g.Setup("remote/co1/A",
 		gt.File("a.go", root+"B/C"),

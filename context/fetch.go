@@ -50,7 +50,7 @@ func (f *fetcher) op(op *Operation) ([]*Operation, error) {
 	}
 
 	op.Type = OpCopy
-	ps, err := pkgspec.Parse("", op.Src)
+	ps, err := pkgspec.Parse("", pathos.EscapeImport(op.Src))
 	if err != nil {
 		return nextOps, err
 	}
@@ -89,7 +89,7 @@ func (f *fetcher) op(op *Operation) ([]*Operation, error) {
 		}
 
 		vcsCmd = updateVcsCmd(rr.VCS)
-		repoRoot = pathos.EscapeImport(rr.Root)
+		repoRoot = rr.Root
 		repoRootDir = filepath.Join(f.CacheRoot, repoRoot)
 
 		err = vcsCmd.Create(repoRootDir, rr.Repo)

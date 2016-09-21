@@ -14,6 +14,8 @@ import (
 	"runtime"
 	"testing"
 	"text/template"
+
+	"github.com/kardianos/govendor/internal/pathos"
 )
 
 // Process for testing run().
@@ -63,7 +65,7 @@ func (g *GopathTest) mkdir(s string) {
 	}
 }
 func (g *GopathTest) mksrc(s string) string {
-	p := g.Path(s)
+	p := pathos.EscapeImport(g.Path(s))
 	err := os.MkdirAll(p, 0700)
 	if err != nil {
 		g.Fatal(err)
